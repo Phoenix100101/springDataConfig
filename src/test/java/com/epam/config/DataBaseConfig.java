@@ -14,13 +14,14 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {"com"})
+@EnableJpaRepositories(basePackages = {"com.epam.Repositories"})
 @EnableTransactionManagement
 public class DataBaseConfig {
 
     @Bean
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
+                .addScript("sql/create_tables.sql")
                 .build();
     }
 
@@ -28,7 +29,7 @@ public class DataBaseConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactory.setDataSource(dataSource());
-        entityManagerFactory.setPackagesToScan("com");
+        entityManagerFactory.setPackagesToScan("com.epam");
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         entityManagerFactory.setJpaVendorAdapter(vendorAdapter);
         Properties properties = new Properties();
