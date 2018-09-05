@@ -14,14 +14,13 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {"com.epam.Repositories"})
+@EnableJpaRepositories(basePackages = {"com.epam.repositories"})
 @EnableTransactionManagement
 public class DataBaseConfig {
 
     @Bean
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
-                .addScript("sql/create_tables.sql")
                 .build();
     }
 
@@ -30,14 +29,20 @@ public class DataBaseConfig {
         LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactory.setDataSource(dataSource());
         entityManagerFactory.setPackagesToScan("com.epam");
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        entityManagerFactory.setJpaVendorAdapter(vendorAdapter);
+        entityManagerFactory.setJpaVendorAdapter(hibernateJpaVendorAdapter());
         Properties properties = new Properties();
         properties.put("hibernate.dialect","org.hibernate.dialect.H2Dialect");
         properties.put("show_sql","true");
         properties.put("hbm2ddl.auto","create");
         entityManagerFactory.setJpaProperties(properties);
         return entityManagerFactory;
+    }
+
+    @Bean
+    public HibernateJpaVendorAdapter hibernateJpaVendorAdapter() {
+      HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+      vendorAdapter.setGenerateDdl(true);
+      return vendorAdapter;
     }
 
     @Bean
